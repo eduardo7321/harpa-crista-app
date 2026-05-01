@@ -25,37 +25,79 @@ const HinoDetailScreen = ({ route }) => {
     }
   };
 
-  // Função para formatar texto com **negrito**
-  const formatarTexto = (texto) => {
-    if (!texto) return null;
-    const partes = texto.split(/(\*\*[^*]+\*\*)/g);
-    return partes.map((parte, index) => {
-      if (parte.startsWith('**') && parte.endsWith('**')) {
-        return <Text key={index} style={styles.negrito}>{parte.slice(2, -2)}</Text>;
+const renderLetra = () => {
+  if (!hino.letra) return null;
+  
+  const linhas = hino.letra.split('\n');
+  const resultado = [];
+  let dentroNegrito = false;
+  
+  for (let i = 0; i < linhas.length; i++) {
+    let linha = linhas[i];
+    
+    // Verifica se a linha tem início de negrito
+    if (linha.includes('**') && !dentroNegrito) {
+      const partes = linha.split(/(\*\*)/);
+      for (let j = 0; j < partes.length; j++) {
+        const parte = partes[j];
+        if (parte === '**') {
+          dentroNegrito = !dentroNegrito;
+        } else if (parte.trim() !== '') {
+          resultado.push(
+            <Text key={`${i}-${j}`} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
+              {parte}
+            </Text>
+          );
+        }
       }
-      return <Text key={index}>{parte}</Text>;
-    });
-  };
-
-  const linhas = hino.letra?.split('\n') || [];
+    } 
+    // Verifica se a linha tem fim de negrito
+    else if (linha.includes('**') && dentroNegrito) {
+      const partes = linha.split(/(\*\*)/);
+      for (let j = 0; j < partes.length; j++) {
+        const parte = partes[j];
+        if (parte === '**') {
+          dentroNegrito = !dentroNegrito;
+        } else if (parte.trim() !== '') {
+          resultado.push(
+            <Text key={`${i}-${j}`} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
+              {parte}
+            </Text>
+          );
+        }
+      }
+    }
+    // Linha normal (sem **)
+    else {
+      resultado.push(
+        <Text key={i} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
+          {linha}
+        </Text>
+      );
+    }
+    
+    // Adiciona quebra de linha após cada linha (exceto a última)
+    //if (i < linhas.length - 1) {
+    //  resultado.push(<Text key={`br-${i}`}>{"\n"}</Text>);
+    //}
+  }
+  
+  return resultado;
+};
 
   return (
     <ScrollView style={styles.container}>
       <View style={styles.header}>
         <Text style={styles.numero}>Hino {hino.numero}</Text>
         <Text style={styles.titulo}>{hino.titulo}</Text>
-        <TouchableOpacity onPress={toggleFavorite} style={styles.heartButton}>
+        {/*<TouchableOpacity onPress={toggleFavorite} style={styles.heartButton}>
           <Text style={[styles.heart, isFav && styles.heartActive]}>
             {isFav ? '❤️' : '♡'}
           </Text>
-        </TouchableOpacity>
+        </TouchableOpacity>*/}
       </View>
       <View style={styles.letraContainer}>
-        {linhas.map((linha, idx) => (
-          <Text key={idx} style={styles.linha}>
-            {formatarTexto(linha)}
-          </Text>
-        ))}
+        {renderLetra()}
       </View>
     </ScrollView>
   );
@@ -101,7 +143,13 @@ const styles = StyleSheet.create({
     lineHeight: 28,
     color: '#333',
     textAlign: 'center',
-    marginBottom: 8,
+    marginBottom: 12,
+  },
+  textoNormal: {
+    fontSize: 18,
+    lineHeight: 28,
+    color: '#333',
+    textAlign: 'center',
   },
   negrito: {
     fontWeight: 'bold',

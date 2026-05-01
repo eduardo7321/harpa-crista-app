@@ -48,9 +48,8 @@ const HomeScreen = ({ navigation }) => {
         onPress={() => navigation.navigate('HinoDetail', { hino: item })}
       >
         <View style={styles.cardContent}>
-          <View style={styles.textContainer}>
-            <Text style={styles.numero}>{item.numero}</Text>
-            <Text style={styles.titulo}>{item.titulo}</Text>
+          <View style={styles.textContainer}>            
+            <Text style={styles.titulo}>{item.numero} - {item.titulo}</Text>
           </View>
           <TouchableOpacity onPress={() => toggleFavorite(item.id)}>
             <Text style={[styles.heart, isFav && styles.heartActive]}>
@@ -110,7 +109,7 @@ const styles = StyleSheet.create({
     color: '#333',
   },
   favLink: {
-    fontSize: 14,
+    fontSize: 18,
     color: '#4a90e2',
     fontWeight: '500',
   },
