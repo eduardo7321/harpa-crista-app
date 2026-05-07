@@ -113,14 +113,14 @@ npx expo start
 ```
 
 
-# 📊 Otimizações de Performance
+## 📊 Otimizações de Performance
 - Otimização	Implementação
 - Virtualização	FlatList com initialNumToRender={20}
 - Debounce na busca	Delay de 300ms para redução de chamadas
 - Memoização	useCallback em funções de renderização
 - Cache offline	AsyncStorage para dados persistentes
 
-# 🤝 Agradecimentos Especiais
+## 🤝 Agradecimentos Especiais
 - 🙏 "Eu te agradeço, Jesus, meu Senhor
 As tuas bênçãos a flux.
 Eu me elevo por teu grande amor
@@ -134,18 +134,18 @@ Oferta profunda do meu coração!"
 
 - *Menção honrosa:* Agradecemos ao DanielLiberato pelo excelente trabalho no projeto [Harpa-Crista-JSON-640-Hinos-Completa](https://github.com/DanielLiberato/Harpa-Crista-JSON-640-Hinos-Completa), que serviu como base para obtermos todos os hinos formatados em JSON. Seu trabalho foi fundamental para a existência deste aplicativo.
 
-# 📈 Implementações futurasRoadmap
+## 📈 Implementações futurasRoadmap
 - Modo noturno/Dark mode
 
 - Compartilhar versículos como imagem
 
 - Aumentar/diminuir tamanho da fonte
 
-# 📄 Licença
+## 📄 Licença
 
 - Distribuído sob licença MIT. Veja o arquivo LICENSE para mais informações.
 
-# 📧 Contato
+## 📧 Contato
 - Eduardo Silva - [GitHub](https://github.com/eduardo7321)
 - [Linkedin](https://www.linkedin.com/in/eduardojose184/)
 
