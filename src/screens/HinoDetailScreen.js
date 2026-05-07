@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView  } from 'react-native';
 import { isFavorite, addFavorite, removeFavorite } from '../services/favoriteService';
 
-const HinoDetailScreen = ({ route }) => {
+const HinoDetailScreen = ({ route, navigation }) => {
   const { hino } = route.params;
   const [isFav, setIsFav] = useState(false);
 
@@ -25,139 +25,185 @@ const HinoDetailScreen = ({ route }) => {
     }
   };
 
-const renderLetra = () => {
-  if (!hino.letra) return null;
-  
-  const linhas = hino.letra.split('\n');
-  const resultado = [];
-  let dentroNegrito = false;
-  
-  for (let i = 0; i < linhas.length; i++) {
-    let linha = linhas[i];
+  const renderLetra = () => {
+    if (!hino.letra) return null;
     
-    // Verifica se a linha tem início de negrito
-    if (linha.includes('**') && !dentroNegrito) {
-      const partes = linha.split(/(\*\*)/);
-      for (let j = 0; j < partes.length; j++) {
-        const parte = partes[j];
-        if (parte === '**') {
-          dentroNegrito = !dentroNegrito;
-        } else if (parte.trim() !== '') {
-          resultado.push(
-            <Text key={`${i}-${j}`} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
-              {parte}
-            </Text>
-          );
+    const linhas = hino.letra.split('\n');
+    const resultado = [];
+    let dentroNegrito = false;
+    
+    for (let i = 0; i < linhas.length; i++) {
+      let linha = linhas[i];
+      
+      // Verifica se a linha tem início de negrito
+      if (linha.includes('**') && !dentroNegrito) {
+        const partes = linha.split(/(\*\*)/);
+        for (let j = 0; j < partes.length; j++) {
+          const parte = partes[j];
+          if (parte === '**') {
+            dentroNegrito = !dentroNegrito;
+          } else if (parte.trim() !== '') {
+            resultado.push(
+              <Text key={`${i}-${j}`} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
+                {parte}
+              </Text>
+            );
+          }
+        }
+      } 
+      // Verifica se a linha tem fim de negrito
+      else if (linha.includes('**') && dentroNegrito) {
+        const partes = linha.split(/(\*\*)/);
+        for (let j = 0; j < partes.length; j++) {
+          const parte = partes[j];
+          if (parte === '**') {
+            dentroNegrito = !dentroNegrito;
+          } else if (parte.trim() !== '') {
+            resultado.push(
+              <Text key={`${i}-${j}`} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
+                {parte}
+              </Text>
+            );
+          }
         }
       }
-    } 
-    // Verifica se a linha tem fim de negrito
-    else if (linha.includes('**') && dentroNegrito) {
-      const partes = linha.split(/(\*\*)/);
-      for (let j = 0; j < partes.length; j++) {
-        const parte = partes[j];
-        if (parte === '**') {
-          dentroNegrito = !dentroNegrito;
-        } else if (parte.trim() !== '') {
-          resultado.push(
-            <Text key={`${i}-${j}`} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
-              {parte}
-            </Text>
-          );
-        }
+      // Linha normal (sem **)
+      else {
+        resultado.push(
+          <Text key={i} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
+            {linha}
+          </Text>
+        );
       }
     }
-    // Linha normal (sem **)
-    else {
-      resultado.push(
-        <Text key={i} style={dentroNegrito ? styles.negrito : styles.textoNormal}>
-          {linha}
-        </Text>
-      );
-    }
     
-    // Adiciona quebra de linha após cada linha (exceto a última)
-    //if (i < linhas.length - 1) {
-    //  resultado.push(<Text key={`br-${i}`}>{"\n"}</Text>);
-    //}
-  }
-  
-  return resultado;
-};
+    return resultado;
+  };
 
   return (
-    <ScrollView style={styles.container}>
+    <SafeAreaView style={styles.container}>
+      <View style={styles.safeTop}/>
+      {/* Header com fundo combinando */}
       <View style={styles.header}>
-        <Text style={styles.numero}>Hino {hino.numero}</Text>
-        <Text style={styles.titulo}>{hino.titulo}</Text>
-        {/*<TouchableOpacity onPress={toggleFavorite} style={styles.heartButton}>
-          <Text style={[styles.heart, isFav && styles.heartActive]}>
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()} 
+          style={styles.backButton}
+        >
+          <Text style={styles.backButtonText}>← Voltar</Text>
+        </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <Text style={styles.numero}>Hino {hino.numero}</Text>
+          <Text style={styles.titulo}>{hino.titulo}</Text>
+        </View>
+        <TouchableOpacity onPress={toggleFavorite} style={styles.heartButton}>
+          {/* <Text style={[styles.heart, isFav && styles.heartActive]}>
             {isFav ? '❤️' : '♡'}
-          </Text>
-        </TouchableOpacity>*/}
+          </Text> */}
+        </TouchableOpacity>
       </View>
-      <View style={styles.letraContainer}>
-        {renderLetra()}
-      </View>
-    </ScrollView>
+      
+      {/* Conteúdo do hino */}
+      <ScrollView 
+        style={styles.scrollView}
+        showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.scrollContent}
+      >
+        <View style={styles.letraContainer}>
+          {renderLetra()}
+        </View>
+      </ScrollView>
+    </SafeAreaView>
   );
 };
 
 const styles = StyleSheet.create({
+  safeTop: {
+  height: Platform.OS === 'ios' ? 40 : 30,
+  backgroundColor: '#2C1810', // Mesma cor do header
+},
   container: {
     flex: 1,
-    backgroundColor: '#fff',
+    backgroundColor: '#F8F5F0', // Papel envelhecido (igual da HomeScreen)
   },
   header: {
-    backgroundColor: '#4a90e2',
-    padding: 24,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#2C1810', // Marrom escuro (combina com o título da Home)
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8DCC8',
+  },
+  backButton: {
+    padding: 8,
+    width: 70,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#F8F5F0',
+    fontWeight: '500',
+  },
+  headerContent: {
+    flex: 1,
     alignItems: 'center',
   },
   numero: {
-    fontSize: 16,
-    color: '#fff',
-    opacity: 0.9,
-    marginBottom: 8,
+    fontSize: 14,
+    color: '#F8F5F0',
+    opacity: 0.8,
+    marginBottom: 4,
+    fontWeight: '500',
   },
   titulo: {
-    fontSize: 24,
+    fontSize: 18,
     fontWeight: 'bold',
-    color: '#fff',
+    color: '#F8F5F0',
     textAlign: 'center',
   },
   heartButton: {
-    marginTop: 12,
+    padding: 8,
+    width: 70,
+    alignItems: 'flex-end',
   },
   heart: {
-    fontSize: 32,
-    color: '#fff',
+    fontSize: 28,
+    color: '#F8F5F0',
   },
   heartActive: {
-    color: '#ff6b6b',
+    color: '#E53935',
+  },
+  scrollView: {
+    flex: 1,
+  },
+  scrollContent: {
+    paddingBottom: 40,
   },
   letraContainer: {
-    padding: 24,
-  },
-  linha: {
-    fontSize: 18,
-    lineHeight: 28,
-    color: '#333',
-    textAlign: 'center',
-    marginBottom: 12,
+    paddingHorizontal: 24,
+    paddingVertical: 20,
   },
   textoNormal: {
     fontSize: 18,
-    lineHeight: 28,
-    color: '#333',
+    lineHeight: 30,
+    color: '#2C1810', // Marrom escuro (combina com o texto da Home)
     textAlign: 'center',
+    marginBottom: 8,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
   },
   negrito: {
     fontWeight: 'bold',
     fontSize: 18,
-    lineHeight: 28,
-    color: '#333',
+    lineHeight: 30,
+    color: '#2C1810',
     textAlign: 'center',
+    marginTop: 8,
+    marginBottom: 8,
+    fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
   },
 });
+
+// Adicionar Platform no import
+import { Platform } from 'react-native';
 
 export default HinoDetailScreen;

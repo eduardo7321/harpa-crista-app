@@ -1,5 +1,13 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { SafeAreaView, FlatList, Text, TouchableOpacity, StyleSheet, View } from 'react-native';
+import { 
+  SafeAreaView, 
+  FlatList, 
+  Text, 
+  TouchableOpacity, 
+  StyleSheet, 
+  View,
+  Platform 
+} from 'react-native';
 import { getAllHinos } from '../services/hinoService';
 import { loadFavorites, removeFavorite } from '../services/favoriteService';
 
@@ -24,25 +32,66 @@ const FavoritosScreen = ({ navigation }) => {
     <TouchableOpacity 
       style={styles.card}
       onPress={() => navigation.navigate('HinoDetail', { hino: item })}
+      activeOpacity={0.7}
     >
-      <Text style={styles.numero}>{item.numero}</Text>
-      <Text style={styles.titulo}>{item.titulo}</Text>
+      <View style={styles.cardContent}>
+        <View style={styles.numberContainer}>
+          <Text style={styles.numero}>{item.numero}</Text>
+        </View>
+        <View style={styles.textContainer}>
+          <Text style={styles.titulo}>{item.titulo}</Text>
+          <Text style={styles.subtitle}>Harpa Cristã</Text>
+        </View>
+        <TouchableOpacity 
+          onPress={async () => {
+            await removeFavorite(item.id);
+            carregarFavoritos();
+          }} 
+          style={styles.removeButton}
+        >
+          {/* <Text style={styles.removeText}>🗑️</Text> */}
+        </TouchableOpacity>
+      </View>
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <Text style={styles.header}>⭐ Meus Favoritos</Text>
+      <View style={styles.safeTop} />
+      {/* Header estilizado */}
+      <View style={styles.header}>
+        <TouchableOpacity 
+          onPress={() => navigation.goBack()} 
+          style={styles.backButton}
+        >
+          <Text style={styles.backButtonText}>← Voltar</Text>
+        </TouchableOpacity>
+        <View style={styles.headerContent}>
+          <Text style={styles.headerTitle}>⭐ Meus Favoritos</Text>
+          <Text style={styles.headerSubtitle}>
+            {hinosFavoritos.length} hino{hinosFavoritos.length !== 1 ? 's' : ''} salvos
+          </Text>
+        </View>
+        <View style={styles.placeholder} />
+      </View>
+      
+      {/* Lista de favoritos */}
       <FlatList
         data={hinosFavoritos}
         keyExtractor={(item) => item.id.toString()}
         renderItem={renderItem}
         showsVerticalScrollIndicator={false}
+        contentContainerStyle={styles.listContent}
         ListEmptyComponent={
-          <Text style={styles.emptyText}>
-            Você ainda não tem hinos favoritos.{'\n'}
-            Toque no ♡ ao lado do hino para adicionar!
-          </Text>
+          <View style={styles.emptyContainer}>
+            <Text style={styles.emptyEmoji}>💔</Text>
+            <Text style={styles.emptyText}>
+              Você ainda não tem hinos favoritos.
+            </Text>
+            <Text style={styles.emptySubtext}>
+              Toque no ♡ ao lado do hino para adicionar!
+            </Text>
+          </View>
         }
       />
     </SafeAreaView>
@@ -50,45 +99,127 @@ const FavoritosScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
+  safeTop: {
+    height: Platform.OS === 'ios' ? 40 : 30, // Ajuste para camera
+    backgroundColor: '#F8F5F0',
+  },
   container: {
     flex: 1,
-    backgroundColor: '#f5f5f5',
-    padding: 16,
+    backgroundColor: '#F8F5F0', // Papel envelhecido
   },
   header: {
-    fontSize: 22,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: '#2C1810', // Marrom escuro
+    paddingHorizontal: 16,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#E8DCC8',
+  },
+  backButton: {
+    padding: 8,
+    width: 70,
+  },
+  backButtonText: {
+    fontSize: 16,
+    color: '#F8F5F0',
+    fontWeight: '500',
+  },
+  headerContent: {
+    flex: 1,
+    alignItems: 'center',
+  },
+  headerTitle: {
+    fontSize: 20,
     fontWeight: 'bold',
-    color: '#333',
-    marginBottom: 16,
-    textAlign: 'center',
-  },
-  card: {
-    backgroundColor: '#fff',
-    padding: 16,
-    marginBottom: 12,
-    borderRadius: 8,
-    elevation: 2,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-  },
-  numero: {
-    fontSize: 14,
-    color: '#666',
+    color: '#F8F5F0',
     marginBottom: 4,
   },
+  headerSubtitle: {
+    fontSize: 12,
+    color: '#F8F5F0',
+    opacity: 0.8,
+  },
+  placeholder: {
+    width: 70,
+  },
+  listContent: {
+    padding: 16,
+    paddingBottom: 24,
+  },
+  card: {
+    backgroundColor: '#FFF',
+    marginBottom: 12,
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 1 },
+    shadowOpacity: 0.05,
+    shadowRadius: 2,
+    elevation: 1,
+  },
+  cardContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 12,
+  },
+  numberContainer: {
+    width: 56,
+    height: 56,
+    borderRadius: 12,
+    backgroundColor: '#F8F5F0',
+    justifyContent: 'center',
+    alignItems: 'center',
+    marginRight: 12,
+  },
+  numero: {
+    fontSize: 22,
+    fontWeight: '700',
+    color: '#8B7355',
+  },
+  textContainer: {
+    flex: 1,
+  },
   titulo: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#333',
+    fontSize: 16,
+    fontWeight: '600',
+    color: '#2C1810',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 11,
+    color: '#A0522D',
+  },
+  removeButton: {
+    padding: 8,
+    marginLeft: 8,
+  },
+  removeText: {
+    fontSize: 20,
+    opacity: 0.6,
+  },
+  emptyContainer: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingVertical: 80,
+  },
+  emptyEmoji: {
+    fontSize: 64,
+    marginBottom: 20,
   },
   emptyText: {
+    fontSize: 18,
+    fontWeight: '500',
+    color: '#A0522D',
+    marginBottom: 8,
     textAlign: 'center',
-    marginTop: 50,
-    fontSize: 16,
+  },
+  emptySubtext: {
+    fontSize: 14,
     color: '#999',
-    lineHeight: 24,
+    textAlign: 'center',
+    lineHeight: 20,
+    paddingHorizontal: 40,
   },
 });
 

@@ -1,45 +1,61 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const FAVORITES_KEY = '@HarpaApp:favoritos';
+const FAVORITES_KEY = '@harpa_favorites';
+const RECENT_KEY = '@harpa_recent';
 
-// Carrega os favoritos salvos
 export const loadFavorites = async () => {
   try {
-    const saved = await AsyncStorage.getItem(FAVORITES_KEY);
-    return saved ? JSON.parse(saved) : [];
+    const favorites = await AsyncStorage.getItem(FAVORITES_KEY);
+    return favorites ? JSON.parse(favorites) : [];
   } catch (error) {
     console.error('Erro ao carregar favoritos:', error);
     return [];
   }
 };
 
-// Salva a lista de favoritos
-export const saveFavorites = async (favoritos) => {
-  try {
-    await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(favoritos));
-  } catch (error) {
-    console.error('Erro ao salvar favoritos:', error);
-  }
-};
-
-// Adiciona um hino aos favoritos
 export const addFavorite = async (hinoId) => {
-  const atual = await loadFavorites();
-  if (!atual.includes(hinoId)) {
-    const novo = [...atual, hinoId];
-    await saveFavorites(novo);
+  try {
+    const favorites = await loadFavorites();
+    if (!favorites.includes(hinoId)) {
+      const newFavorites = [...favorites, hinoId];
+      await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
+    }
+  } catch (error) {
+    console.error('Erro ao adicionar favorito:', error);
   }
 };
 
-// Remove um hino dos favoritos
 export const removeFavorite = async (hinoId) => {
-  const atual = await loadFavorites();
-  const novo = atual.filter(id => id !== hinoId);
-  await saveFavorites(novo);
+  try {
+    const favorites = await loadFavorites();
+    const newFavorites = favorites.filter(id => id !== hinoId);
+    await AsyncStorage.setItem(FAVORITES_KEY, JSON.stringify(newFavorites));
+  } catch (error) {
+    console.error('Erro ao remover favorito:', error);
+  }
 };
 
-// Verifica se um hino é favorito
-export const isFavorite = async (hinoId) => {
-  const favoritos = await loadFavorites();
-  return favoritos.includes(hinoId);
+export const getRecentHinos = async () => {
+  try {
+    const recents = await AsyncStorage.getItem(RECENT_KEY);
+    return recents ? JSON.parse(recents) : [];
+  } catch (error) {
+    console.error('Erro ao carregar recentes:', error);
+    return [];
+  }
+};
+
+export const addToRecent = async (hinoId) => {
+  try {
+    let recents = await getRecentHinos();
+    // Remove se já existir
+    recents = recents.filter(id => id !== hinoId);
+    // Adiciona no início
+    recents = [hinoId, ...recents];
+    // Mantém apenas os últimos 10
+    recents = recents.slice(0, 10);
+    await AsyncStorage.setItem(RECENT_KEY, JSON.stringify(recents));
+  } catch (error) {
+    console.error('Erro ao adicionar recente:', error);
+  }
 };
