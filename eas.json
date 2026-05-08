@@ -6,14 +6,12 @@
     "preview": {
       "android": {
         "buildType": "apk"
-      },
-      "installCommand": "npm install"
+      }
     },
     "production": {
       "android": {
         "buildType": "app-bundle"
-      },
-      "installCommand": "npm install"
+      }
     }
   }
 }
