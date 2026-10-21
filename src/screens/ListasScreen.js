@@ -72,15 +72,15 @@ export default function ListasScreen({ navigation }) {
       >
         <View style={styles.nomeLinha}>
           {destaque ? (
-            <Ionicons name="star" size={16} color="#FFF" />
+            <Ionicons name="star" size={16} color={cores.onAccent} />
           ) : (
             <View style={[styles.ponto, { backgroundColor: item.cor }]} />
           )}
-          <Text style={[styles.nome, { color: destaque ? '#FFF' : cores.text }]} numberOfLines={2}>
+          <Text style={[styles.nome, { color: destaque ? cores.onAccent : cores.text }]} numberOfLines={2}>
             {item.nome}
           </Text>
         </View>
-        <Text style={[styles.qtd, { color: destaque ? 'rgba(255,255,255,0.85)' : cores.muted }]}>
+        <Text style={[styles.qtd, { color: destaque ? cores.onAccent : cores.muted, opacity: destaque ? 0.85 : 1 }]}>
           {contagem(item.hinos.length)}
         </Text>
       </TouchableOpacity>

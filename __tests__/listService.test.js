@@ -81,3 +81,30 @@ test('criarLista aceita hinos iniciais', async () => {
   const { lista } = criarLista(listas, { nome: 'Ceia', cor: '#000', hinos: [5] });
   expect(lista.hinos).toEqual([5]);
 });
+
+test('listas salvas com formato inválido são saneadas e Favoritos volta', async () => {
+  await AsyncStorage.setItem(LISTS_KEY, JSON.stringify([
+    null, 1, { id: 'x' },
+    { id: 'ok', nome: 'Ok', cor: '#000', hinos: [2, 2, 9999, 'a'], fixa: false },
+  ]));
+  const listas = await carregarListas(VALIDOS);
+  expect(listas.map(l => l.id)).toEqual([FAVORITOS_ID, 'ok']);
+  expect(listas[0]).toMatchObject({ nome: 'Favoritos', fixa: true, hinos: [] });
+  expect(listas[1].hinos).toEqual([2]);
+});
+
+test('lista vazia salva ainda tem Favoritos', async () => {
+  await AsyncStorage.setItem(LISTS_KEY, '[]');
+  const listas = await carregarListas(VALIDOS);
+  expect(listas.map(l => l.id)).toEqual([FAVORITOS_ID]);
+});
+
+test('falha ao ler o armazenamento não sobrescreve os dados salvos', async () => {
+  const salvas = [{ id: FAVORITOS_ID, nome: 'Favoritos', cor: '#000', hinos: [1], fixa: true }];
+  await AsyncStorage.setItem(LISTS_KEY, JSON.stringify(salvas));
+  jest.spyOn(console, 'error').mockImplementationOnce(() => {});
+  AsyncStorage.getItem.mockImplementationOnce(() => Promise.reject(new Error('Row too big')));
+  const listas = await carregarListas(VALIDOS);
+  expect(listas[0].id).toBe(FAVORITOS_ID);
+  expect(JSON.parse(await AsyncStorage.getItem(LISTS_KEY))).toEqual(salvas);
+});

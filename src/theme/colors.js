@@ -4,6 +4,7 @@ export const light = {
   text: '#2C1810',
   muted: '#8B7355',
   accent: '#A0522D',
+  onAccent: '#FFFFFF',
   chip: '#F1EAE0',
   line: '#E8DCC8',
 };
@@ -14,6 +15,7 @@ export const dark = {
   text: '#EFE6DA',
   muted: '#A8977F',
   accent: '#D9A06B',
+  onAccent: '#1E140E',
   chip: '#2E251E',
   line: '#3A2F27',
 };

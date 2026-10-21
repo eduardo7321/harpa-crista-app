@@ -10,10 +10,12 @@ export const LISTAS_SUGERIDAS = ['Pregação', 'Sangue', 'Oração', 'Consagraç
 const ERRO_NOME_VAZIO = 'Dê um nome para a lista.';
 const ERRO_NOME_DUPLICADO = 'Já existe uma lista com esse nome.';
 
+// Lança erro só se a leitura falhar; valor ausente ou JSON inválido viram null
 const lerJSON = async (chave) => {
+  const valor = await AsyncStorage.getItem(chave);
+  if (!valor) return null;
   try {
-    const valor = await AsyncStorage.getItem(chave);
-    return valor ? JSON.parse(valor) : null;
+    return JSON.parse(valor);
   } catch (error) {
     return null;
   }
@@ -68,13 +70,38 @@ export const editarLista = (listas, id, { nome, cor }) => {
 export const excluirLista = (listas, id) =>
   listas.filter(lista => lista.id !== id || lista.fixa);
 
+const favoritosVazios = () => (
+  { id: FAVORITOS_ID, nome: 'Favoritos', cor: LIST_COLORS[0], hinos: [], fixa: true }
+);
+
+// Mantém só listas bem formadas, com hinos válidos e sem repetição; garante Favoritos
+const sanear = (salvas, hinoIdsValidos) => {
+  const listas = salvas
+    .filter(l => l && typeof l === 'object' && typeof l.id === 'string'
+      && typeof l.nome === 'string' && Array.isArray(l.hinos))
+    .map(l => ({
+      id: l.id,
+      nome: l.nome,
+      cor: typeof l.cor === 'string' ? l.cor : LIST_COLORS[0],
+      hinos: [...new Set(l.hinos)].filter(id => hinoIdsValidos.has(id)),
+      fixa: l.id === FAVORITOS_ID,
+    }));
+  const favoritos = listas.find(l => l.id === FAVORITOS_ID) ?? favoritosVazios();
+  return [favoritos, ...listas.filter(l => l.id !== FAVORITOS_ID)];
+};
+
 const listasIniciais = async (hinoIdsValidos) => {
-  const antigos = await lerJSON(FAVORITES_KEY);
+  let antigos = null;
+  try {
+    antigos = await lerJSON(FAVORITES_KEY);
+  } catch (error) {
+    antigos = null;
+  }
   const favoritos = Array.isArray(antigos)
     ? [...new Set(antigos)].filter(id => hinoIdsValidos.has(id))
     : [];
   return [
-    { id: FAVORITOS_ID, nome: 'Favoritos', cor: LIST_COLORS[0], hinos: favoritos, fixa: true },
+    { ...favoritosVazios(), hinos: favoritos },
     ...LISTAS_SUGERIDAS.map((nome, i) => ({
       id: `sugerida-${i + 1}`,
       nome,
@@ -95,8 +122,15 @@ export const salvarListas = async (listas) => {
 
 // Na primeira execução migra os favoritos antigos e cria as listas sugeridas
 export const carregarListas = async (hinoIdsValidos) => {
-  const salvas = await lerJSON(LISTS_KEY);
-  if (Array.isArray(salvas)) return salvas;
+  let salvas;
+  try {
+    salvas = await lerJSON(LISTS_KEY);
+  } catch (error) {
+    // Falha de leitura: usa o padrão nesta sessão, sem sobrescrever o que está salvo
+    console.error('Erro ao carregar listas:', error);
+    return listasIniciais(hinoIdsValidos);
+  }
+  if (Array.isArray(salvas)) return sanear(salvas, hinoIdsValidos);
   const listas = await listasIniciais(hinoIdsValidos);
   await salvarListas(listas);
   return listas;

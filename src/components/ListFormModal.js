@@ -77,7 +77,7 @@ const ListFormModal = ({ visible, inicial, titulo, onSalvar, onCancelar }) => {
               style={[styles.botao, styles.botaoPrimario, { backgroundColor: cores.accent }]}
               accessibilityRole="button"
             >
-              <Text style={[styles.botaoTexto, { color: '#FFF' }]}>Salvar</Text>
+              <Text style={[styles.botaoTexto, { color: cores.onAccent }]}>Salvar</Text>
             </TouchableOpacity>
           </View>
         </View>
