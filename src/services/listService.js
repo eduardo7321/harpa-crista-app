@@ -40,10 +40,10 @@ export const validarNome = (listas, nome, ignorarId) => {
   return existe ? ERRO_NOME_DUPLICADO : null;
 };
 
-export const criarLista = (listas, { nome, cor }) => {
+export const criarLista = (listas, { nome, cor, hinos = [] }) => {
   const erro = validarNome(listas, nome);
   if (erro) throw new Error(erro);
-  const lista = { id: novoId(), nome: nome.trim(), cor, hinos: [], fixa: false };
+  const lista = { id: novoId(), nome: nome.trim(), cor, hinos: [...hinos], fixa: false };
   return { listas: [...listas, lista], lista };
 };
 

@@ -75,3 +75,9 @@ test('Favoritos não pode ser excluída nem renomeada', async () => {
   expect(() => editarLista(listas, FAVORITOS_ID, { nome: 'Outra' })).toThrow();
   expect(editarLista(listas, listas[1].id, { cor: '#ABCDEF' })[1].cor).toBe('#ABCDEF');
 });
+
+test('criarLista aceita hinos iniciais', async () => {
+  const listas = await carregarListas(VALIDOS);
+  const { lista } = criarLista(listas, { nome: 'Ceia', cor: '#000', hinos: [5] });
+  expect(lista.hinos).toEqual([5]);
+});
