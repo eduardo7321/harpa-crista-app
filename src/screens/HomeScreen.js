@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import {
-  SafeAreaView,
   FlatList,
   Text,
   TextInput,
@@ -8,8 +7,8 @@ import {
   StyleSheet,
   View,
   ScrollView,
-  Platform 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAllHinos, searchHinos } from '../services/hinoService';
 import { loadFavorites, addFavorite, removeFavorite } from '../services/favoriteService';
 
@@ -26,21 +25,7 @@ export default function HomeScreen({ navigation }) {
 
   const carregarDados = async () => {
     try {
-      console.log('Carregando hinos...');
       const todos = getAllHinos();
-      console.log('Total de hinos carregados:', todos.length);
-      
-      // Verificar se o primeiro hino tem letra
-      if (todos.length > 0) {
-        console.log('Exemplo do primeiro hino:', {
-          id: todos[0].id,
-          numero: todos[0].numero,
-          titulo: todos[0].titulo,
-          temLetra: !!todos[0].letra,
-          letraPreview: todos[0].letra?.substring(0, 50)
-        });
-      }
-      
       setTodosHinos(todos);
       setHinos(todos);
       
@@ -112,10 +97,7 @@ export default function HomeScreen({ navigation }) {
     return (
       <TouchableOpacity
         style={styles.card}
-        onPress={() => {
-          console.log('Navegando para hino:', item.numero, item.titulo, 'Tem letra?', !!item.letra);
-          navigation.navigate('HinoDetail', { hino: item });
-        }}
+        onPress={() => navigation.navigate('HinoDetail', { hino: item })}
         activeOpacity={0.7}
       >
         <View style={styles.cardContent}>
@@ -146,11 +128,10 @@ export default function HomeScreen({ navigation }) {
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.safeTop}/>
       <View style={styles.header}>
         <View>
           <Text style={styles.headerTitle}>Harpa Cristã</Text>
-          <Text style={styles.headerSubtitle}>640 hinos de adoração</Text>
+          <Text style={styles.headerSubtitle}>{todosHinos.length} hinos de adoração</Text>
         </View>
         <TouchableOpacity style={styles.favButton} onPress={() => navigation.navigate('Favoritos')}>
           <Text style={styles.favButtonText}>⭐ {favoritos.length}</Text>
@@ -194,10 +175,6 @@ export default function HomeScreen({ navigation }) {
 }
 
 const styles = StyleSheet.create({
-  safeTop: {
-  height: Platform.OS === 'ios' ? 40 : 30, // Ajuste para camera
-  backgroundColor: '#F8F5F0',
-  },
   container: {
     flex: 1,
     backgroundColor: '#F8F5F0',

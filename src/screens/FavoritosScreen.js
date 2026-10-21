@@ -1,15 +1,14 @@
 import React, { useState, useEffect, useCallback } from 'react';
 import { 
-  SafeAreaView, 
   FlatList, 
   Text, 
   TouchableOpacity, 
   StyleSheet, 
   View,
-  Platform 
 } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import { getAllHinos } from '../services/hinoService';
-import { loadFavorites, removeFavorite } from '../services/favoriteService';
+import { loadFavorites } from '../services/favoriteService';
 
 const FavoritosScreen = ({ navigation }) => {
   const [hinosFavoritos, setHinosFavoritos] = useState([]);
@@ -42,22 +41,12 @@ const FavoritosScreen = ({ navigation }) => {
           <Text style={styles.titulo}>{item.titulo}</Text>
           <Text style={styles.subtitle}>Harpa Cristã</Text>
         </View>
-        <TouchableOpacity 
-          onPress={async () => {
-            await removeFavorite(item.id);
-            carregarFavoritos();
-          }} 
-          style={styles.removeButton}
-        >
-          {/* <Text style={styles.removeText}>🗑️</Text> */}
-        </TouchableOpacity>
       </View>
     </TouchableOpacity>
   );
 
   return (
     <SafeAreaView style={styles.container}>
-      <View style={styles.safeTop} />
       {/* Header estilizado */}
       <View style={styles.header}>
         <TouchableOpacity 
@@ -99,10 +88,6 @@ const FavoritosScreen = ({ navigation }) => {
 };
 
 const styles = StyleSheet.create({
-  safeTop: {
-    height: Platform.OS === 'ios' ? 40 : 30, // Ajuste para camera
-    backgroundColor: '#F8F5F0',
-  },
   container: {
     flex: 1,
     backgroundColor: '#F8F5F0', // Papel envelhecido
@@ -189,14 +174,6 @@ const styles = StyleSheet.create({
   subtitle: {
     fontSize: 11,
     color: '#A0522D',
-  },
-  removeButton: {
-    padding: 8,
-    marginLeft: 8,
-  },
-  removeText: {
-    fontSize: 20,
-    opacity: 0.6,
   },
   emptyContainer: {
     alignItems: 'center',

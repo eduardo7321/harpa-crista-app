@@ -1,29 +1,10 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, ScrollView, TouchableOpacity, StyleSheet, SafeAreaView  } from 'react-native';
-import { isFavorite, addFavorite, removeFavorite } from '../services/favoriteService';
+import React from 'react';
+import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
+import { SafeAreaView } from 'react-native-safe-area-context';
+import { StatusBar } from 'expo-status-bar';
 
 const HinoDetailScreen = ({ route, navigation }) => {
   const { hino } = route.params;
-  const [isFav, setIsFav] = useState(false);
-
-  useEffect(() => {
-    verificarFavorito();
-  }, []);
-
-  const verificarFavorito = async () => {
-    const fav = await isFavorite(hino.id);
-    setIsFav(fav);
-  };
-
-  const toggleFavorite = async () => {
-    if (isFav) {
-      await removeFavorite(hino.id);
-      setIsFav(false);
-    } else {
-      await addFavorite(hino.id);
-      setIsFav(true);
-    }
-  };
 
   const renderLetra = () => {
     if (!hino.letra) return null;
@@ -81,10 +62,10 @@ const HinoDetailScreen = ({ route, navigation }) => {
   };
 
   return (
-    <SafeAreaView style={styles.container}>
-      <View style={styles.safeTop}/>
+    <View style={styles.container}>
+      <StatusBar style="light" />
       {/* Header com fundo combinando */}
-      <View style={styles.header}>
+      <SafeAreaView edges={['top']} style={styles.header}>
         <TouchableOpacity 
           onPress={() => navigation.goBack()} 
           style={styles.backButton}
@@ -95,12 +76,8 @@ const HinoDetailScreen = ({ route, navigation }) => {
           <Text style={styles.numero}>Hino {hino.numero}</Text>
           <Text style={styles.titulo}>{hino.titulo}</Text>
         </View>
-        <TouchableOpacity onPress={toggleFavorite} style={styles.heartButton}>
-          {/* <Text style={[styles.heart, isFav && styles.heartActive]}>
-            {isFav ? '❤️' : '♡'}
-          </Text> */}
-        </TouchableOpacity>
-      </View>
+        <View style={styles.headerSpacer} />
+      </SafeAreaView>
       
       {/* Conteúdo do hino */}
       <ScrollView 
@@ -108,19 +85,15 @@ const HinoDetailScreen = ({ route, navigation }) => {
         showsVerticalScrollIndicator={false}
         contentContainerStyle={styles.scrollContent}
       >
-        <View style={styles.letraContainer}>
+        <SafeAreaView edges={['bottom']} style={styles.letraContainer}>
           {renderLetra()}
-        </View>
+        </SafeAreaView>
       </ScrollView>
-    </SafeAreaView>
+    </View>
   );
 };
 
 const styles = StyleSheet.create({
-  safeTop: {
-  height: Platform.OS === 'ios' ? 40 : 30,
-  backgroundColor: '#2C1810', // Mesma cor do header
-},
   container: {
     flex: 1,
     backgroundColor: '#F8F5F0', // Papel envelhecido (igual da HomeScreen)
@@ -161,17 +134,8 @@ const styles = StyleSheet.create({
     color: '#F8F5F0',
     textAlign: 'center',
   },
-  heartButton: {
-    padding: 8,
+  headerSpacer: {
     width: 70,
-    alignItems: 'flex-end',
-  },
-  heart: {
-    fontSize: 28,
-    color: '#F8F5F0',
-  },
-  heartActive: {
-    color: '#E53935',
   },
   scrollView: {
     flex: 1,
@@ -202,8 +166,5 @@ const styles = StyleSheet.create({
     fontFamily: Platform.OS === 'ios' ? 'Georgia' : 'serif',
   },
 });
-
-// Adicionar Platform no import
-import { Platform } from 'react-native';
 
 export default HinoDetailScreen;
