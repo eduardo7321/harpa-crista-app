@@ -21,13 +21,21 @@ def title(y,txt,size):
 def svg(bg,body):
     return f'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">{DEFS}<rect width="100" height="100" fill="{bg}"/>{body}</svg>'
 import sys
-ROUND=len(sys.argv)>1
-# A: cover, clef on staff with notes, no text
-A=svg('url(#black)', frame()+staff(52)+CLEF.format(x=31,y=70,s=30)+note(52,62.4)+note(62,57.6)+note(72,54.4)+'<path d="M72 89.5 L72 100 L76 97 L80 100 L80 89.5 Z" fill="url(#ribbon)"/>')
-# B: cover with title + clef staff
-B=svg('url(#black)', frame()+title(31,'HARPA',13)+title(82,'CRISTÃ',13)+staff(51,2.8,20,80)+CLEF.format(x=35,y=64.5,s=21)+note(52,59.4)+note(61,56.6)+note(70,53.8))
-# C: navy, big centered clef inside frame + ribbon
-C=svg('url(#navy)', frame()+CLEF.format(x=50,y=72,s=35)+'<path d="M72 89.5 L72 100 L76 97 L80 100 L80 89.5 Z" fill="url(#ribbon)"/>')
-# D: wine version of B
-D=svg('url(#wine)', frame()+title(31,'HARPA',13)+title(82,'CRISTÃ',13)+staff(51,2.8,20,80)+CLEF.format(x=35,y=64.5,s=21)+note(52,59.4)+note(61,56.6)+note(70,53.8))
-for k,v in zip('abcd',[A,B,C,D]): open(f'v_{k}{"r" if ROUND else ""}.svg','w').write(v)
+
+ROUND = False
+CONTEUDO_D = (title(31,'HARPA',13)+title(82,'CRISTÃ',13)+staff(51,2.8,20,80)
+              +CLEF.format(x=35,y=64.5,s=21)+note(52,59.4)+note(61,56.6)+note(70,53.8))
+
+def icone_d():
+    """Arte completa: fundo vinho, moldura e conteúdo."""
+    return svg('url(#wine)', frame()+CONTEUDO_D)
+
+def frente_adaptativa():
+    """Foreground do adaptive icon: sem fundo e sem moldura, dentro da zona segura central."""
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">{DEFS}'
+            f'<g transform="translate(50,50) scale(0.75) translate(-50,-50)">{CONTEUDO_D}</g></svg>')
+
+if __name__ == '__main__':
+    destino = sys.argv[1] if len(sys.argv) > 1 else '.'
+    open(f'{destino}/icone.svg', 'w').write(icone_d())
+    open(f'{destino}/frente-adaptativa.svg', 'w').write(frente_adaptativa())

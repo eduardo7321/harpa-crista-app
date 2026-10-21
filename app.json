@@ -15,7 +15,7 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#F8F5F0"
+        "backgroundColor": "#5E1616"
       },
       "edgeToEdgeEnabled": true,
       "package": "com.eduardosilva184.harpacrista",
@@ -33,11 +33,12 @@
         "expo-splash-screen",
         {
           "image": "./assets/splash-icon.png",
-          "imageWidth": 200,
+          "imageWidth": 240,
           "resizeMode": "contain",
-          "backgroundColor": "#F8F5F0"
+          "backgroundColor": "#5E1616"
         }
-      ]
+      ],
+      "expo-font"
     ],
     "extra": {
       "eas": {
