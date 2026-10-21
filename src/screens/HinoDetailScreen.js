@@ -2,9 +2,10 @@ import React from 'react';
 import { View, Text, ScrollView, TouchableOpacity, StyleSheet, Platform } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
+import { getHinoById } from '../services/hinoService';
 
 const HinoDetailScreen = ({ route, navigation }) => {
-  const { hino } = route.params;
+  const hino = getHinoById(route.params.hinoId);
 
   const renderLetra = () => {
     if (!hino.letra) return null;

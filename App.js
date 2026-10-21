@@ -1,40 +1,25 @@
 // App.js
 import React from 'react';
-import { NavigationContainer } from '@react-navigation/native';
-import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { StatusBar } from 'expo-status-bar';
-import HomeScreen from './src/screens/HomeScreen';
-import HinoDetailScreen from './src/screens/HinoDetailScreen';
-import FavoritosScreen from './src/screens/FavoritosScreen';
+import { SettingsProvider, useTheme } from './src/context/SettingsContext';
+import { ListsProvider } from './src/context/ListsContext';
+import AppNavigator from './src/navigation/AppNavigator';
 
-const Stack = createNativeStackNavigator();
+function ThemedStatusBar() {
+  const { escuro } = useTheme();
+  return <StatusBar style={escuro ? 'light' : 'dark'} />;
+}
 
 export default function App() {
   return (
     <SafeAreaProvider>
-      <StatusBar style="dark" />
-      <NavigationContainer>
-        <Stack.Navigator 
-          initialRouteName="Home"
-          screenOptions={{
-            headerShown: false // ← ISSO ESCONDE TODOS OS HEADERS DO NAVIGATOR
-          }}
-        >
-          <Stack.Screen 
-            name="Home" 
-            component={HomeScreen} 
-          />
-          <Stack.Screen 
-            name="HinoDetail" 
-            component={HinoDetailScreen} 
-          />
-          <Stack.Screen 
-            name="Favoritos" 
-            component={FavoritosScreen} 
-          />
-        </Stack.Navigator>
-      </NavigationContainer>
+      <SettingsProvider>
+        <ListsProvider>
+          <ThemedStatusBar />
+          <AppNavigator />
+        </ListsProvider>
+      </SettingsProvider>
     </SafeAreaProvider>
   );
-} 
+}
