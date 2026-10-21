@@ -35,7 +35,21 @@ def frente_adaptativa():
     return (f'<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100" viewBox="0 0 100 100">{DEFS}'
             f'<g transform="translate(50,50) scale(0.75) translate(-50,-50)">{CONTEUDO_D}</g></svg>')
 
+def banner():
+    """Imagem de destaque da Play Store (1024x500): ícone à esquerda e nome à direita."""
+    icone = icone_d().replace('<svg ', '<svg x="92" y="90" ', 1).replace('width="100" height="100"', 'width="320" height="320"', 1)
+    return (f'<svg xmlns="http://www.w3.org/2000/svg" width="1024" height="500" viewBox="0 0 1024 500">{DEFS}'
+            '<rect width="1024" height="500" fill="#3A0C0C"/>'
+            '<rect width="1024" height="500" fill="url(#wine)" opacity=".9"/>'
+            f'{icone}'
+            '<text x="480" y="225" font-family="Noto Serif" font-weight="bold" font-size="76" fill="url(#gold)">Harpa Cristã</text>'
+            '<line x1="482" y1="258" x2="930" y2="258" stroke="url(#goldH)" stroke-width="2"/>'
+            '<text x="482" y="310" font-family="Noto Serif" font-size="30" fill="#EFE6DA">Os 640 hinos, com busca na letra,</text>'
+            '<text x="482" y="352" font-family="Noto Serif" font-size="30" fill="#EFE6DA">listas e modo escuro.</text>'
+            '</svg>')
+
 if __name__ == '__main__':
     destino = sys.argv[1] if len(sys.argv) > 1 else '.'
     open(f'{destino}/icone.svg', 'w').write(icone_d())
     open(f'{destino}/frente-adaptativa.svg', 'w').write(frente_adaptativa())
+    open(f'{destino}/banner.svg', 'w').write(banner())
