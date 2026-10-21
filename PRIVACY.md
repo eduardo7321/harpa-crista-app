@@ -2,7 +2,7 @@
 
 _Última atualização: 21 de outubro de 2026_
 
-O aplicativo **Harpa Cristã** (`com.eduardosilva184.harpacrista`) foi desenvolvido por Eduardo Silva e é oferecido gratuitamente.
+O aplicativo **Harpa Cristã** (`com.eduardo.harpacrista`) foi desenvolvido por Eduardo Silva e é oferecido gratuitamente.
 
 ## Dados coletados
 
