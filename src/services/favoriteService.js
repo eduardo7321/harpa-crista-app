@@ -1,6 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-const FAVORITES_KEY = '@harpa_favorites';
+export const FAVORITES_KEY = '@harpa_favorites';
 const RECENT_KEY = '@harpa_recent';
 
 export const loadFavorites = async () => {
